@@ -1,0 +1,145 @@
+[
+    {
+        "id": 1,
+        "title": "DÍA 1",
+        "enabled": true,
+        "image": null,
+        "exercises": [
+            {
+                "order": 1,
+                "name": "BANCO PLANO CON BARRA",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-1.jpg"
+            },
+            {
+                "order": 2,
+                "name": "JALON CERRADO EN DORSALERA",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-2.jpg"
+            },
+            {
+                "order": 3,
+                "name": "PRESS MILITAR CON MANCUERNAS",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-3.jpg"
+            },
+            {
+                "order": 4,
+                "name": "SENTADILLA COPA",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-4.jpg"
+            },
+            {
+                "order": 5,
+                "name": "CAMILLA DE ISQUIOTIBIALES",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-5.jpg"
+            },
+            {
+                "order": 6,
+                "name": "ELEVACIÓN DE PELVIS EN EL SUELO",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-6.jpg"
+            },
+            {
+                "order": 7,
+                "name": "CURL PARADO CON MANCUERNAS",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "1-7.jpg"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "DÍA 2",
+        "enabled": false,
+        "image": null,
+        "exercises": [
+            {
+                "order": 1,
+                "name": "APERTURA INCLINADO CON MANCUERNAS",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "2-1.jpg"
+            },
+            {
+                "order": 2,
+                "name": "REMO BAJO EN DORSALERA",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "2-2.jpg"
+            },
+            {
+                "order": 3,
+                "name": "VUELOS LATERALES CON MANCUERNAS",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "2-3.jpg"
+            },
+            {
+                "order": 4,
+                "name": "CAMILLA DE CUÁDRICEPS",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "2-4.jpg"
+            },
+            {
+                "order": 5,
+                "name": "SENTADILLAS SUMO CON KTB",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "2-5.jpg"
+            },
+            {
+                "order": 6,
+                "name": "SUBIDA AL CAJON",
+                "seriesMin": 4,
+                "seriesMax": 4,
+                "repsMin": 10,
+                "repsMax": 10,
+                "pause": null,
+                "image": "2-6.jpg"
+            },
+            {
+                "order": 7,
+                "name": "TRÍCEPS PARADO EN POLEA",
+                "seriesMin": 3,
+                "seriesMax": 4,
+                "repsMin": 15,
+                "repsMax": 20,
+                "image": "2-7.jpg"
+            }
+        ]
+    }
+]
