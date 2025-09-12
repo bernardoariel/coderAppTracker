@@ -1,0 +1,1 @@
+// SQLite y funciones auxiliares
