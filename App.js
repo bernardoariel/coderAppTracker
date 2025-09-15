@@ -1,64 +1,118 @@
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, View, Text, Image } from 'react-native';
+import React, { useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { store } from './src/store/store';
-import rutinas from './src/data/rutinas.json'
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Header from './src/components/Header';
-import FlatCard from './src/components/FlatCard';
+import RutinaScreen from './src/screens/RutinaScreen';
 
-const rutinaImages = {
-  1: require('./assets/images/1.jpg'),
-  2: require('./assets/images/2.jpg'),
-  3: require('./assets/images/3.jpg'),
-  4: require('./assets/images/4.jpg'),
-  5: require('./assets/images/5.jpg'),
-  6: require('./assets/images/6.jpg'),
-  7: require('./assets/images/7.jpg'),
-};
+// 👇 screens de Config
+import ConfigHomeScreen from './src/screens/config/ConfigHomeScreen';
+import ExerciseABMScreen from './src/screens/config/ExerciseABMScreen';
+import RoutineABMScreen from './src/screens/config/RoutineABMScreen';
 
-const Stack = createNativeStackNavigator();
-export default function App() {
-  const renderRutinaItem = ({ item }) => (
-    <FlatCard>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-        <Image
-          source={rutinaImages[item.id]}
-          style={{ width: 100, height: 100, borderRadius: 12, marginVertical: 8, marginRight: 16 }}
-        />
-        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>{item.title}</Text>
-      </View>
-    </FlatCard>
-  )
+// DB init
+import { migrate, q } from './src/lib/db';
+import { seedExercisesFromJson } from './src/lib/seedExercises';
+
+const Tab = createBottomTabNavigator();
+const ConfigStack = createNativeStackNavigator();
+
+// init robusto de DB
+function useInitDb() {
+  useEffect(() => {
+    (async () => {
+      try {
+        await migrate();
+        const [{ c }] = await q('SELECT COUNT(*) AS c FROM exercises');
+        if (!c) {
+          await seedExercisesFromJson();
+          console.log('✅ Seed ejecutado (device sin datos)');
+        } else {
+          console.log(`DB ok: ${c} ejercicios`);
+        }
+      } catch (e) {
+        console.log('❌ Init DB error:', e?.message || e);
+      }
+    })();
+  }, []);
+}
+
+// stack interno de Config
+function ConfigStackNavigator() {
   return (
-    <Provider store={store}>
-      {/* <NavigationContainer>
-        <Stack.Navigator initialRouteName="SignIn">
-          <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Ingresar' }} />
-          <Stack.Screen name="Routines" component={RoutinesScreen} options={{ title: 'Rutinas' }} />
-        </Stack.Navigator>
-      </NavigationContainer> */}
-      <View style={styles.container}>
-        <Header title="Gym-Tracker" />
-        <FlatList
-          data={rutinas}
-          renderItem={renderRutinaItem}
-          keyExtractor={item => item.id}
-        />
-        <StatusBar style='light' />
-      </View>
-    </Provider>
+    <ConfigStack.Navigator
+      screenOptions={({ route }) => ({
+        header: () => (
+          <Header
+            title="Gym-Tracker"
+            subtitle={
+              route.name === 'ConfigHome' ? 'Config' :
+                route.name === 'ExerciseABM' ? 'ABM Ejercicios' :
+                  'ABM Rutinas'
+            }
+          />
+        ),
+      })}
+    >
+      <ConfigStack.Screen name="ConfigHome" component={ConfigHomeScreen} />
+      <ConfigStack.Screen name="ExerciseABM" component={ExerciseABMScreen} />
+      <ConfigStack.Screen name="RoutineABM" component={RoutineABMScreen} />
+    </ConfigStack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
+function AppTabs() {
+  const insets = useSafeAreaInsets();
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        // header global SOLO para pantallas directas del Tab (ej: Rutinas)
+        header: () => (
+          <Header
+            title="Gym-Tracker"
+            subtitle={route.name === 'Rutinas' ? 'Rutinas' : 'Config'}
+          />
+        ),
+        tabBarActiveTintColor: '#2563EB',
+        tabBarInactiveTintColor: '#5A5A5A',
+        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: Math.max(insets.bottom, 8) },
+        tabBarIcon: ({ color, size }) => {
+          const name = route.name === 'Rutinas' ? 'list' :
+            route.name === 'Config' ? 'settings' : 'ellipse';
+          return <Ionicons name={name} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Rutinas" component={RutinaScreen} />
+      {/* 🔧 acá apagamos el header del Tab, para usar el del Stack */}
+      <Tab.Screen
+        name="Config"
+        component={ConfigStackNavigator}
+        options={{ headerShown: false }}
+      />
+    </Tab.Navigator>
+  );
+}
 
-  },
 
-});
+export default function App() {
+  useInitDb();
+  return (
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <AppTabs />
+          <StatusBar style="light" />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </Provider>
+  );
+}
