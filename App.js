@@ -1,3 +1,4 @@
+// App.js
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import 'react-native-gesture-handler';
@@ -13,11 +14,14 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import Header from './src/components/Header';
 import RutinaScreen from './src/screens/RutinaScreen';
 
-// 👇 screens de Config
+// Config stack screens
 import ConfigHomeScreen from './src/screens/config/ConfigHomeScreen';
-import ExerciseABMScreen from './src/screens/config/ExerciseABMScreen';
+import ExercisesListScreen from './src/screens/config/ExercisesListScreen';
+import ExerciseUpsertScreen from './src/screens/config/ExerciseUpsertScreen';
 import RoutineABMScreen from './src/screens/config/RoutineABMScreen';
-
+import RoutinesListScreen from './src/screens/config/RoutinesListScreen'
+import RoutineUpsertScreen from './src/screens/config/RoutineUpsertScreen';
+import RoutineAssignExercisesScreen from './src/screens/config/RoutineAssignExercisesScreen';
 // DB init
 import { migrate, q } from './src/lib/db';
 import { seedExercisesFromJson } from './src/lib/seedExercises';
@@ -25,7 +29,7 @@ import { seedExercisesFromJson } from './src/lib/seedExercises';
 const Tab = createBottomTabNavigator();
 const ConfigStack = createNativeStackNavigator();
 
-// init robusto de DB
+
 function useInitDb() {
   useEffect(() => {
     (async () => {
@@ -45,7 +49,7 @@ function useInitDb() {
   }, []);
 }
 
-// stack interno de Config
+// Stack interno de Config
 function ConfigStackNavigator() {
   return (
     <ConfigStack.Navigator
@@ -55,26 +59,38 @@ function ConfigStackNavigator() {
             title="Gym-Tracker"
             subtitle={
               route.name === 'ConfigHome' ? 'Config' :
-                route.name === 'ExerciseABM' ? 'ABM Ejercicios' :
-                  'ABM Rutinas'
+                route.name === 'RoutinesList' ? 'ABM Rutinas' :
+                  route.name === 'RoutineUpsert' ? 'Editar / Crear rutina' :
+                    route.name === 'RoutineAssign' ? 'Asignar ejercicios' :
+                      route.name === 'ExercisesList' ? 'ABM Ejercicios' :
+                        route.name === 'ExerciseUpsert' ? 'Editar / Crear' :
+                          'Config'
             }
+            showBack={route.name !== 'ConfigHome'}
           />
         ),
       })}
     >
       <ConfigStack.Screen name="ConfigHome" component={ConfigHomeScreen} />
-      <ConfigStack.Screen name="ExerciseABM" component={ExerciseABMScreen} />
-      <ConfigStack.Screen name="RoutineABM" component={RoutineABMScreen} />
+      <ConfigStack.Screen name="ExercisesList" component={ExercisesListScreen} />
+
+      {/* 👉 Registramos las dos rutas apuntando al mismo componente */}
+      <ConfigStack.Screen name="ExerciseUpsert" component={ExerciseUpsertScreen} />
+      <ConfigStack.Screen name="ExerciseUpsertScreen" component={ExerciseUpsertScreen} />
+
+      <ConfigStack.Screen name="RoutinesList" component={RoutinesListScreen} />
+      <ConfigStack.Screen name="RoutineUpsert" component={RoutineUpsertScreen} />
+      <ConfigStack.Screen name="RoutineAssign" component={RoutineAssignExercisesScreen} />
     </ConfigStack.Navigator>
   );
 }
 
+// Tabs
 function AppTabs() {
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        // header global SOLO para pantallas directas del Tab (ej: Rutinas)
         header: () => (
           <Header
             title="Gym-Tracker"
@@ -92,16 +108,10 @@ function AppTabs() {
       })}
     >
       <Tab.Screen name="Rutinas" component={RutinaScreen} />
-      {/* 🔧 acá apagamos el header del Tab, para usar el del Stack */}
-      <Tab.Screen
-        name="Config"
-        component={ConfigStackNavigator}
-        options={{ headerShown: false }}
-      />
+      <Tab.Screen name="Config" component={ConfigStackNavigator} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
-
 
 export default function App() {
   useInitDb();
