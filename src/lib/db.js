@@ -47,6 +47,16 @@ export async function migrate() {
       FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
     );
   `);
+  // Sesiones de rutina (historial simple)
+  await db.execAsync(`
+  CREATE TABLE IF NOT EXISTS routine_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    routine_id TEXT NOT NULL,
+    done_at INTEGER NOT NULL,
+    FOREIGN KEY (routine_id) REFERENCES routines(id) ON DELETE CASCADE
+  );
+`);
+  await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_sessions_routine ON routine_sessions(routine_id, done_at DESC);`);
 
   /* Índices útiles */
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_routine_exercises_routine ON routine_exercises(routine_id, position);`);

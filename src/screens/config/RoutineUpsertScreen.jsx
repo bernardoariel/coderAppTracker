@@ -10,9 +10,9 @@ export default function RoutineUpsertScreen({ route, navigation }) {
     const [name, setName] = useState('');
     const [enabled, setEnabled] = useState(true);
 
-    const [allExercises, setAllExercises] = useState([]);          // [{id,name}]
+    const [allExercises, setAllExercises] = useState([]);   // [{id,name}]
     const [filter, setFilter] = useState('');
-    const [selected, setSelected] = useState([]);                  // [{id,name} en orden]
+    const [selected, setSelected] = useState([]);           // [{id,name}] en orden
 
     useEffect(() => {
         (async () => {
@@ -41,18 +41,14 @@ export default function RoutineUpsertScreen({ route, navigation }) {
         })();
     }, [isEdit, id]);
 
+    // 👉 Siempre lista completa; solo filtra por texto
     const filtered = useMemo(() => {
         const f = filter.trim().toLowerCase();
-        if (!f) return [];
-        return allExercises
-            .filter(x => !selected.find(s => s.id === x.id)) // ocultar los ya elegidos
-            .filter(x => x.name?.toLowerCase().includes(f))
-            .slice(0, 12); // limitar dropdown
-    }, [allExercises, filter, selected]);
+        return allExercises.filter(x => x.name?.toLowerCase().includes(f));
+    }, [allExercises, filter]);
 
     function addExercise(item) {
-        setSelected(prev => [...prev, item]);
-        setFilter(''); // cerrar dropdown
+        setSelected(prev => (prev.some(s => s.id === item.id) ? prev : [...prev, item]));
     }
 
     function removeSelected(idToRemove) {
@@ -77,7 +73,7 @@ export default function RoutineUpsertScreen({ route, navigation }) {
                 );
             }
 
-            // asignaciones: reemplazo completo
+            // reemplazo completo de asignaciones, manteniendo el orden de "selected"
             await run(`DELETE FROM routine_exercises WHERE routine_id=?`, [rid]);
             for (let i = 0; i < selected.length; i++) {
                 await run(
@@ -115,27 +111,50 @@ export default function RoutineUpsertScreen({ route, navigation }) {
                 <Text>{enabled ? 'Habilitada' : 'Deshabilitada'}</Text>
             </View>
 
-            {/* Búsqueda / dropdown */}
-            <Text style={styles.label}>Agregar ejercicios</Text>
+            {/* Buscador */}
+            <Text style={styles.label}>Agregar ejercicios (tap para marcar/desmarcar)</Text>
             <TextInput
                 placeholder="Buscar ejercicio por nombre…"
                 value={filter}
                 onChangeText={setFilter}
                 style={styles.input}
             />
-            {filtered.length > 0 && (
-                <View style={styles.dropdown}>
-                    {filtered.map(item => (
-                        <Pressable key={String(item.id)} onPress={() => addExercise(item)} style={styles.dropdownItem}>
-                            <Text numberOfLines={1}>{item.name}</Text>
-                            <Text style={styles.addMark}>+</Text>
-                        </Pressable>
-                    ))}
-                </View>
-            )}
 
-            {/* Seleccionados */}
-            <Text style={styles.label}>Seleccionados ({selected.length})</Text>
+            {/* Lista SIEMPRE visible con checkbox y toggle */}
+            <View style={styles.dropdown}>
+                <FlatList
+                    data={filtered}
+                    keyExtractor={(i) => String(i.id)}
+                    renderItem={({ item }) => {
+                        const checked = selected.some(s => s.id === item.id);
+                        return (
+                            <Pressable
+                                onPress={() => (checked ? removeSelected(item.id) : addExercise(item))}
+                                style={styles.dropdownItem}
+                            >
+                                <Text numberOfLines={1} style={{ flex: 1 }}>{item.name}</Text>
+
+                                {/* Checkbox visual */}
+                                <View
+                                    style={{
+                                        width: 22, height: 22, borderRadius: 4,
+                                        borderWidth: 1,
+                                        borderColor: checked ? '#2563EB' : '#CBD5E1',
+                                        backgroundColor: checked ? '#2563EB' : 'transparent',
+                                        alignItems: 'center', justifyContent: 'center'
+                                    }}
+                                >
+                                    {checked ? <Text style={{ color: '#fff', fontWeight: '700' }}>✓</Text> : null}
+                                </View>
+                            </Pressable>
+                        );
+                    }}
+                    style={{ maxHeight: 240 }}
+                />
+            </View>
+
+            {/* Seleccionados (muestra y permite quitar) */}
+            {/* <Text style={styles.label}>Seleccionados ({selected.length})</Text> */}
             <FlatList
                 data={selected}
                 keyExtractor={(i) => String(i.id)}
@@ -150,6 +169,7 @@ export default function RoutineUpsertScreen({ route, navigation }) {
                         </Pressable>
                     </View>
                 )}
+
             />
 
             <Button title={isEdit ? 'Guardar cambios' : 'Crear rutina'} onPress={save} />
@@ -165,7 +185,6 @@ const styles = {
         borderColor: '#E5E7EB',
         borderRadius: 8,
         backgroundColor: '#fff',
-        maxHeight: 240,
         overflow: 'hidden',
     },
     dropdownItem: {
@@ -177,7 +196,6 @@ const styles = {
         alignItems: 'center',
         gap: 8,
     },
-    addMark: { marginLeft: 'auto', color: '#2563EB', fontWeight: '700' },
     selectedRow: {
         paddingVertical: 10,
         borderBottomWidth: 1,

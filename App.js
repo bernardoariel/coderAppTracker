@@ -25,6 +25,7 @@ import RoutineAssignExercisesScreen from './src/screens/config/RoutineAssignExer
 // DB init
 import { migrate, q } from './src/lib/db';
 import { seedExercisesFromJson } from './src/lib/seedExercises';
+import RoutineRunScreen from './src/screens/config/RoutineRunScreen';
 
 const Tab = createBottomTabNavigator();
 const ConfigStack = createNativeStackNavigator();
@@ -64,7 +65,9 @@ function ConfigStackNavigator() {
                     route.name === 'RoutineAssign' ? 'Asignar ejercicios' :
                       route.name === 'ExercisesList' ? 'ABM Ejercicios' :
                         route.name === 'ExerciseUpsert' ? 'Editar / Crear' :
-                          'Config'
+                          route.name === 'RoutineRun' ? 'Ejecutar rutina' :
+
+                            'Config'
             }
             showBack={route.name !== 'ConfigHome'}
           />
@@ -81,6 +84,7 @@ function ConfigStackNavigator() {
       <ConfigStack.Screen name="RoutinesList" component={RoutinesListScreen} />
       <ConfigStack.Screen name="RoutineUpsert" component={RoutineUpsertScreen} />
       <ConfigStack.Screen name="RoutineAssign" component={RoutineAssignExercisesScreen} />
+      <ConfigStack.Screen name="RoutineRun" component={RoutineRunScreen} />
     </ConfigStack.Navigator>
   );
 }

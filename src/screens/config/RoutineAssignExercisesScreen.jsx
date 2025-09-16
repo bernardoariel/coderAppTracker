@@ -64,7 +64,7 @@ export default function RoutineAssignExercisesScreen({ route, navigation }) {
             <Text style={{ fontWeight: '700' }}>Rutina: {name}</Text>
 
             <TextInput
-                placeholder="Buscar ejercicio"
+                placeholder="Buscar ejercicio!"
                 value={filter}
                 onChangeText={setFilter}
                 style={{ borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8, padding: 10 }}
