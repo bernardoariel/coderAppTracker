@@ -58,6 +58,17 @@ export async function migrate() {
 `);
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_sessions_routine ON routine_sessions(routine_id, done_at DESC);`);
 
+  // Sesiones de seguimiento de distancia (para RunScreen)
+  await db.execAsync(`
+  CREATE TABLE IF NOT EXISTS distance_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    distance_meters REAL NOT NULL,
+    duration_seconds INTEGER NOT NULL,
+    date_time INTEGER NOT NULL
+  );
+`);
+  await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_distance_sessions_date ON distance_sessions(date_time DESC);`);
+
   /* Índices útiles */
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_routine_exercises_routine ON routine_exercises(routine_id, position);`);
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_routine_exercises_exercise ON routine_exercises(exercise_id);`);

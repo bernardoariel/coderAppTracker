@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, View, Pressable } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View, Pressable, TouchableOpacity } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { q } from '../lib/db';
 import FlatCard from '../components/FlatCard';
+import { Ionicons } from '@expo/vector-icons';
 
 // Función para formatear la fecha
 const formatDate = (timestamp) => {
@@ -83,17 +84,43 @@ export default function RutinaScreen() {
                 data={routines}
                 keyExtractor={(item) => String(item.id)}
                 renderItem={renderItem}
-                contentContainerStyle={{ padding: 16, gap: 12 }}
+                contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 100 }}
                 ListEmptyComponent={
                     <Text style={{ textAlign: 'center', marginTop: 24, color: '#6b7280' }}>
                         No hay rutinas habilitadas.
                     </Text>
                 }
             />
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => navigation.navigate('Run')}
+            >
+                <Ionicons name="walk" size={24} color="white" />
+            </TouchableOpacity>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#fff' },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        position: 'relative'
+    },
+    fab: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 20,
+        bottom: 20,
+        backgroundColor: '#2563EB',
+        borderRadius: 30,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+    },
 });

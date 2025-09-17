@@ -13,6 +13,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 
 import Header from './src/components/Header';
 import RutinaScreen from './src/screens/RutinaScreen';
+import RunScreen from './src/screens/RunScreen';
 
 // Config stack screens
 import ConfigHomeScreen from './src/screens/config/ConfigHomeScreen';
@@ -29,6 +30,7 @@ import RoutineRunScreen from './src/screens/config/RoutineRunScreen';
 
 const Tab = createBottomTabNavigator();
 const ConfigStack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator();
 
 
 function useInitDb() {
@@ -117,13 +119,23 @@ function AppTabs() {
   );
 }
 
+// Stack principal para incluir las pantallas que no están en tabs
+function MainStackNavigator() {
+  return (
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootStack.Screen name="HomeTabs" component={AppTabs} />
+      <RootStack.Screen name="Run" component={RunScreen} />
+    </RootStack.Navigator>
+  );
+}
+
 export default function App() {
   useInitDb();
   return (
     <Provider store={store}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <AppTabs />
+          <MainStackNavigator />
           <StatusBar style="light" />
         </NavigationContainer>
       </SafeAreaProvider>
