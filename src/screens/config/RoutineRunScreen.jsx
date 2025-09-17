@@ -1,13 +1,94 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, Pressable, Alert } from 'react-native';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { View, Text, FlatList, Pressable, Alert, Vibration } from 'react-native';
 import { q, run } from '../../lib/db';
+import { Audio } from 'expo-av';
+import Confetti from 'react-native-confetti';
 
 export default function RoutineRunScreen({ route, navigation }) {
     const { routineId, name } = route.params || {};
     const [exercises, setExercises] = useState([]); // [{id,name}]
     const [doneMap, setDoneMap] = useState(new Map()); // id -> boolean
+    const soundRef = useRef(null);
+    const prevAllDoneRef = useRef(false);
+    const confettiRef = useRef(null);
 
+    // Intentar cargar el sonido
     useEffect(() => {
+        // Crearemos el sonido simplemente con la API de Audio sin depender de un archivo
+        const loadSound = async () => {
+            try {
+                // Como alternativa a cargar un archivo, usaremos la propiedad nativa Audio.Sound.createAsync 
+                // con una URL de un sonido de éxito corto en línea
+                const { sound } = await Audio.Sound.createAsync(
+                    // Usando el sonido local de la carpeta assets
+                    require('../../../assets/sounds/success.mp3'),
+                    { shouldPlay: false, volume: 1.0 }
+                );
+                soundRef.current = sound;
+                console.log('Sonido cargado correctamente');
+
+                // Reproducir un sonido breve para asegurar que se carga bien
+                await sound.playAsync();
+                await sound.stopAsync();
+            } catch (error) {
+                console.log('Error al cargar el sonido:', error);
+            }
+        };
+
+        loadSound();
+
+        return () => {
+            if (soundRef.current) {
+                try {
+                    soundRef.current.unloadAsync();
+                } catch (err) {
+                    console.log("Error al descargar sonido:", err);
+                }
+            }
+        };
+    }, []);
+
+    // Función para mostrar la celebración con confeti
+    const playCelebration = () => {
+        // Reiniciar todos los checks inmediatamente
+        const m = new Map();
+        exercises.forEach(r => m.set(String(r.id), false));
+        setDoneMap(m);
+
+        // Vibración más intensa y duradera
+        Vibration.vibrate([0, 300, 100, 300, 100, 300, 100, 300]);
+
+        // Sonido - mejorado para asegurar reproducción
+        if (soundRef.current) {
+            try {
+                // Parar primero cualquier reproducción en curso
+                soundRef.current.stopAsync().catch(() => { });
+
+                // Asegurar que el volumen está al máximo
+                soundRef.current.setVolumeAsync(1.0).catch(() => { });
+
+                // Reproducir el sonido
+                soundRef.current.playFromPositionAsync(0).catch(err => {
+                    console.log("Error al reproducir sonido, intentando método alternativo:", err);
+                    soundRef.current.replayAsync().catch(err2 => {
+                        console.log("Error en método alternativo:", err2);
+                    });
+                });
+            } catch (err) {
+                console.log("Error general al reproducir sonido:", err);
+            }
+        }
+
+        // Lanzar confeti
+        if (confettiRef.current) {
+            confettiRef.current.startConfetti();
+
+            // Detener el confeti después de 5 segundos
+            setTimeout(() => {
+                confettiRef.current.stopConfetti();
+            }, 5000);
+        }
+    }; useEffect(() => {
         (async () => {
             const rows = await q(
                 `SELECT e.id, e.name
@@ -33,6 +114,11 @@ export default function RoutineRunScreen({ route, navigation }) {
         return true;
     }, [doneMap, exercises]);
 
+    // Ya no celebramos automáticamente al marcar todos los checks
+    useEffect(() => {
+        prevAllDoneRef.current = allDone;
+    }, [allDone]);
+
     function toggle(id) {
         const key = String(id);
         setDoneMap(prev => {
@@ -45,6 +131,9 @@ export default function RoutineRunScreen({ route, navigation }) {
     async function completeRoutine() {
         try {
             const now = Date.now();
+
+            // Celebrar completar la rutina
+            playCelebration();
 
             // 1) insertar sesión
             await run(
@@ -65,16 +154,37 @@ export default function RoutineRunScreen({ route, navigation }) {
                 [routineId, routineId]
             );
 
+            // 3) Reiniciar todos los checks para la próxima vez de forma inmediata
+            const resetChecks = () => {
+                console.log("Reseteando checks...");
+                const m = new Map();
+                exercises.forEach(r => m.set(String(r.id), false));
+                setDoneMap(m);
+            };
+
+            // Reiniciar los checks inmediatamente
+            resetChecks();
+
             Alert.alert('¡Listo!', 'Rutina completada ✅', [
-                { text: 'OK', onPress: () => navigation.goBack() }
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        // Asegurarse de que los checks estén reiniciados al salir
+                        resetChecks();
+                        navigation.goBack();
+                    }
+                }
             ]);
         } catch (e) {
             Alert.alert('Error', String(e?.message || e));
         }
     }
 
+    // Usamos el componente Confetti directamente en el render
+
     return (
         <View style={{ flex: 1, padding: 16 }}>
+            <Confetti ref={confettiRef} duration={3000} size={1.5} />
             <Text style={{ fontWeight: '700', fontSize: 16, marginBottom: 8 }}>{name}</Text>
 
             <FlatList

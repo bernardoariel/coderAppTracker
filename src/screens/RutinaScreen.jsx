@@ -4,6 +4,19 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { q } from '../lib/db';
 import FlatCard from '../components/FlatCard';
 
+// Función para formatear la fecha
+const formatDate = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(parseInt(timestamp));
+    return date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
 const covers = {
     1: require('../../assets/images/1.jpg'),
     2: require('../../assets/images/2.jpg'),
@@ -21,7 +34,8 @@ export default function RutinaScreen() {
 
     async function load() {
         const rows = await q(`
-      SELECT r.id, r.name, r.enabled, COUNT(re.exercise_id) AS exercises_count
+      SELECT r.id, r.name, r.enabled, COUNT(re.exercise_id) AS exercises_count,
+             (SELECT MAX(rs.done_at) FROM routine_sessions rs WHERE rs.routine_id = r.id) AS last_done_at
       FROM routines r
       LEFT JOIN routine_exercises re ON re.routine_id = r.id
       WHERE r.enabled = 1
@@ -36,7 +50,10 @@ export default function RutinaScreen() {
     const renderItem = ({ item, index }) => (
         <FlatCard>
             <Pressable
-                onPress={() => navigation.navigate('RoutineRun', { routineId: item.id, name: item.name })}
+                onPress={() => navigation.navigate('Config', {
+                    screen: 'RoutineRun',
+                    params: { routineId: item.id, name: item.name }
+                })}
                 style={{ flexDirection: 'row', alignItems: 'center' }}
             >
                 <Image
@@ -50,6 +67,11 @@ export default function RutinaScreen() {
                     <Text style={{ color: '#6b7280', marginTop: 4 }}>
                         {item.exercises_count} ejercicio{item.exercises_count === 1 ? '' : 's'}
                     </Text>
+                    {item.last_done_at && (
+                        <Text style={{ color: '#3B82F6', marginTop: 2, fontSize: 12 }}>
+                            Completado: {formatDate(item.last_done_at)}
+                        </Text>
+                    )}
                 </View>
             </Pressable>
         </FlatCard>
