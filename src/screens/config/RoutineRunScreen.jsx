@@ -86,7 +86,7 @@ export default function RoutineRunScreen({ route, navigation }) {
             // Detener el confeti después de 5 segundos
             setTimeout(() => {
                 confettiRef.current.stopConfetti();
-            }, 5000);
+            }, 10000);
         }
     }; useEffect(() => {
         (async () => {

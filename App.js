@@ -1,6 +1,6 @@
 // App.js
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { store } from './src/store/store';
@@ -19,7 +19,6 @@ import RunScreen from './src/screens/RunScreen';
 import ConfigHomeScreen from './src/screens/config/ConfigHomeScreen';
 import ExercisesListScreen from './src/screens/config/ExercisesListScreen';
 import ExerciseUpsertScreen from './src/screens/config/ExerciseUpsertScreen';
-import RoutineABMScreen from './src/screens/config/RoutineABMScreen';
 import RoutinesListScreen from './src/screens/config/RoutinesListScreen'
 import RoutineUpsertScreen from './src/screens/config/RoutineUpsertScreen';
 import RoutineAssignExercisesScreen from './src/screens/config/RoutineAssignExercisesScreen';
@@ -68,7 +67,6 @@ function ConfigStackNavigator() {
                       route.name === 'ExercisesList' ? 'ABM Ejercicios' :
                         route.name === 'ExerciseUpsert' ? 'Editar / Crear' :
                           route.name === 'RoutineRun' ? 'Ejecutar rutina' :
-
                             'Config'
             }
             showBack={route.name !== 'ConfigHome'}
