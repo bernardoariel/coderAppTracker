@@ -3,6 +3,7 @@ import { View, Text, FlatList, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { q, run } from '../../lib/db';
 import { useFocusEffect } from '@react-navigation/native';
+import { colors } from '../../global/colors';
 
 export default function ExercisesListScreen({ navigation }) {
     const [rows, setRows] = useState([]);
@@ -31,7 +32,6 @@ export default function ExercisesListScreen({ navigation }) {
 
     return (
         <View style={{ flex: 1 }}>
-            {/* Lista */}
             <FlatList
                 contentContainerStyle={{ padding: 16 }}
                 data={rows}
@@ -50,7 +50,7 @@ export default function ExercisesListScreen({ navigation }) {
                         </Text>
                         <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
                             <Pressable onPress={() => navigation.navigate('ExerciseUpsert', { mode: 'edit', id: item.id })}>
-                                <Text style={{ color: '#2563EB' }}>Editar</Text>
+                                <Text style={{ color: colors.secondary }}>Editar</Text>
                             </Pressable>
                             <Pressable onPress={() => remove(item.id)}>
                                 <Text style={{ color: '#EF4444' }}>Eliminar</Text>
@@ -64,7 +64,7 @@ export default function ExercisesListScreen({ navigation }) {
             <Pressable
                 onPress={() => {
                     console.log('FAB -> ExerciseUpsert (create)');
-                    navigation.push('ExerciseUpsert', { mode: 'create' }); // <— usa push
+                    navigation.push('ExerciseUpsert', { mode: 'create' });
                 }}
                 style={{
                     position: 'absolute',
@@ -73,18 +73,18 @@ export default function ExercisesListScreen({ navigation }) {
                     width: 56,
                     height: 56,
                     borderRadius: 28,
-                    backgroundColor: '#2563EB',
+                    backgroundColor: colors.primary,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    shadowColor: '#000',
+                    shadowColor: colors.black,
                     shadowOpacity: 0.3,
                     shadowOffset: { width: 0, height: 2 },
                     shadowRadius: 4,
                     elevation: 5,
-                    zIndex: 100,            // <— que quede arriba de la lista
+                    zIndex: 100,
                 }}
             >
-                <Ionicons name="add" size={28} color="#fff" />
+                <Ionicons name="add" size={28} color={colors.white} />
             </Pressable>
         </View>
     );

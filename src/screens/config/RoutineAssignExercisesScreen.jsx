@@ -4,11 +4,10 @@ import { q, run } from '../../lib/db';
 
 export default function RoutineAssignExercisesScreen({ route, navigation }) {
     const { routineId, name } = route.params || {};
-    const [all, setAll] = useState([]);         // {id,name}
-    const [selected, setSelected] = useState(new Map()); // id -> position (orden)
+    const [all, setAll] = useState([]);
+    const [selected, setSelected] = useState(new Map());
     const [filter, setFilter] = useState('');
 
-    // cargar ejercicios y asignaciones actuales
     useEffect(() => {
         (async () => {
             const ex = await q(`SELECT id, name FROM exercises ORDER BY name ASC`);
@@ -34,7 +33,7 @@ export default function RoutineAssignExercisesScreen({ route, navigation }) {
         setSelected(prev => {
             const m = new Map(prev);
             if (m.has(id)) m.delete(id);
-            else m.set(id, m.size); // agrega al final
+            else m.set(id, m.size);
             return m;
         });
     }
@@ -42,7 +41,7 @@ export default function RoutineAssignExercisesScreen({ route, navigation }) {
     async function save() {
         try {
             await run('DELETE FROM routine_exercises WHERE routine_id=?', [routineId]);
-            // insertar en orden por position
+
             const entries = Array.from(selected.entries()).sort((a, b) => a[1] - b[1]);
             let pos = 0;
             for (const [exercise_id] of entries) {

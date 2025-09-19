@@ -10,24 +10,24 @@ export default function RoutineUpsertScreen({ route, navigation }) {
     const [name, setName] = useState('');
     const [enabled, setEnabled] = useState(true);
 
-    const [allExercises, setAllExercises] = useState([]);   // [{id,name}]
+    const [allExercises, setAllExercises] = useState([]);
     const [filter, setFilter] = useState('');
-    const [selected, setSelected] = useState([]);           // [{id,name}] en orden
+    const [selected, setSelected] = useState([]);
 
     useEffect(() => {
         (async () => {
-            // ejercicios disponibles
+
             const ex = await q(`SELECT id, name FROM exercises ORDER BY name ASC`);
             setAllExercises(ex);
 
             if (isEdit && id) {
-                // rutina
+
                 const row = (await q(`SELECT id, name, enabled FROM routines WHERE id=?`, [id]))?.[0];
                 if (row) {
                     setName(row.name ?? '');
                     setEnabled(!!row.enabled);
                 }
-                // asignaciones actuales
+
                 const assigned = await q(
                     `SELECT e.id, e.name
              FROM routine_exercises re
@@ -41,7 +41,7 @@ export default function RoutineUpsertScreen({ route, navigation }) {
         })();
     }, [isEdit, id]);
 
-    // 👉 Siempre lista completa; solo filtra por texto
+
     const filtered = useMemo(() => {
         const f = filter.trim().toLowerCase();
         return allExercises.filter(x => x.name?.toLowerCase().includes(f));
@@ -73,7 +73,6 @@ export default function RoutineUpsertScreen({ route, navigation }) {
                 );
             }
 
-            // reemplazo completo de asignaciones, manteniendo el orden de "selected"
             await run(`DELETE FROM routine_exercises WHERE routine_id=?`, [rid]);
             for (let i = 0; i < selected.length; i++) {
                 await run(
@@ -134,7 +133,6 @@ export default function RoutineUpsertScreen({ route, navigation }) {
                             >
                                 <Text numberOfLines={1} style={{ flex: 1 }}>{item.name}</Text>
 
-                                {/* Checkbox visual */}
                                 <View
                                     style={{
                                         width: 22, height: 22, borderRadius: 4,
@@ -153,8 +151,7 @@ export default function RoutineUpsertScreen({ route, navigation }) {
                 />
             </View>
 
-            {/* Seleccionados (muestra y permite quitar) */}
-            {/* <Text style={styles.label}>Seleccionados ({selected.length})</Text> */}
+
             <FlatList
                 data={selected}
                 keyExtractor={(i) => String(i.id)}

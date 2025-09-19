@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, View, Pressable, TouchableOpacity } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { q } from '../lib/db';
-import FlatCard from '../components/FlatCard';
+import { q } from '../../lib/db';
+import FlatCard from '../../components/FlatCard';
 import { Ionicons } from '@expo/vector-icons';
+import { colors } from '../../global/colors';
 
-// Función para formatear la fecha
 const formatDate = (timestamp) => {
     if (!timestamp) return '';
     const date = new Date(parseInt(timestamp));
@@ -19,13 +19,13 @@ const formatDate = (timestamp) => {
 };
 
 const covers = {
-    1: require('../../assets/images/1.jpg'),
-    2: require('../../assets/images/2.jpg'),
-    3: require('../../assets/images/3.jpg'),
-    4: require('../../assets/images/4.jpg'),
-    5: require('../../assets/images/5.jpg'),
-    6: require('../../assets/images/6.jpg'),
-    7: require('../../assets/images/7.jpg'),
+    1: require('../../../assets/images/1.jpg'),
+    2: require('../../../assets/images/2.jpg'),
+    3: require('../../../assets/images/3.jpg'),
+    4: require('../../../assets/images/4.jpg'),
+    5: require('../../../assets/images/5.jpg'),
+    6: require('../../../assets/images/6.jpg'),
+    7: require('../../../assets/images/7.jpg'),
 };
 const coverByIndex = (index) => covers[(index % 7) + 1];
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         right: 20,
         bottom: 20,
-        backgroundColor: '#2563EB',
+        backgroundColor: colors.primary,
         borderRadius: 30,
         elevation: 8,
         shadowColor: '#000',

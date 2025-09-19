@@ -18,7 +18,7 @@ export default function ExcerciseScreen() {
 
     async function reseed() {
         try {
-            await run('DELETE FROM exercises'); // limpia sólo ejercicios
+            await run('DELETE FROM exercises');
             await seedExercisesFromJson();
             await load();
             Alert.alert('Listo', 'Reimportado desde JSON');

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Pressable, FlatList } from 'react-native';
 import { useDistanceTracker } from '../hooks/useDistanceTracker';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
+import { colors } from '../global/colors';
 
 export default function RunScreen({ navigation }) {
     const { meters, active, start, stop, history, setTimerSeconds } = useDistanceTracker();
@@ -145,7 +146,7 @@ export default function RunScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.white,
     },
     content: {
         flex: 1,
