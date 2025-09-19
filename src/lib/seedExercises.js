@@ -18,7 +18,7 @@ const pick = (o, ...keys) => {
     for (const k of keys) if (o[k] !== undefined) return o[k];
     return undefined;
 };
-// quita acentos/espacios extra y pasa a mayúsculas (para detectar por nombre)
+
 const norm = (s) =>
     String(s || '')
         .normalize('NFD').replace(/\p{Diacritic}/gu, '')
@@ -34,7 +34,7 @@ export async function seedExercisesFromJson() {
         const name = String(pick(raw, 'name', 'nombre', 'title') ?? '').trim();
         if (!name) continue;
 
-        // intentar leer del JSON
+
         const seriesRange = parseRange(pick(raw, 'series', 'seriesRange', 'serie'), 0);
         let seriesMin = toNum(pick(raw, 'seriesMin'), seriesRange.min);
         let seriesMax = toNum(pick(raw, 'seriesMax'), seriesRange.max);
@@ -43,11 +43,9 @@ export async function seedExercisesFromJson() {
         let repsMin = toNum(pick(raw, 'repsMin'), repsRange.min);
         let repsMax = toNum(pick(raw, 'repsMax'), repsRange.max);
 
-        // 👉 defaults si faltan (3–4 / 15–20)
         if (seriesMin === 0 && seriesMax === 0) { seriesMin = 3; seriesMax = 4; }
         if (repsMin === 0 && repsMax === 0) { repsMin = 15; repsMax = 20; }
 
-        // 👉 excepción: "Subida al cajón" = 4x10
         const n = norm(name);
         if (n.includes('SUBIDA AL CAJON')) {
             seriesMin = 4; seriesMax = 4;

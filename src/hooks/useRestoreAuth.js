@@ -8,7 +8,7 @@ export function useRestoreAuth() {
   useEffect(() => {
     (async () => {
       try {
-        const raw = await AsyncStorage.getItem('auth'); // { email, idToken, ... }
+        const raw = await AsyncStorage.getItem('auth'); 
         if (raw) {
           const { email } = JSON.parse(raw);
           if (email) dispatch(setEmail(email));

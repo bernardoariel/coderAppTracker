@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Button, Alert } from 'react-native';
 import { q, run } from '../lib/db';
 import { seedExercisesFromJson } from '../lib/seedExercises';

@@ -12,7 +12,7 @@ import { seedExercisesFromJson } from './src/lib/seedExercises';
 import RootNavigator from './src/navigation/RootNavigator.js';
 import AppBootstrap from './src/components/AppBootstrap';
 
-// Función de inicialización DB (fuera de componentes)
+
 let alreadyBootstrapped = false;
 async function initializeDb() {
   try {
@@ -32,7 +32,6 @@ async function initializeDb() {
   }
 }
 
-// Inicializamos la DB antes de renderizar
 initializeDb();
 
 export default function App() {

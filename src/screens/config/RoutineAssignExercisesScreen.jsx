@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { View, Text, FlatList, Pressable, TextInput, Button, Alert } from 'react-native';
 import { q, run } from '../../lib/db';
 

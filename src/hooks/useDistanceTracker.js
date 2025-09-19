@@ -1,4 +1,3 @@
-// src/hooks/useDistanceTracker.js
 import * as Location from 'expo-location';
 import { useRef, useState, useEffect } from 'react';
 import { q, run } from '../lib/db';
@@ -23,7 +22,6 @@ export function useDistanceTracker() {
     const startTimeRef = useRef(null);
     const timerRef = useRef(0);
 
-    // Cargar historial de sesiones
     const loadHistory = async () => {
         try {
             const sessions = await q(`
@@ -38,7 +36,6 @@ export function useDistanceTracker() {
         }
     };
 
-    // Cargar el historial cuando el componente se monta
     useEffect(() => {
         loadHistory();
     }, []);
@@ -68,17 +65,14 @@ export function useDistanceTracker() {
         await sub.current?.remove();
         sub.current = null;
 
-        // Calcular duración en segundos
         const durationSeconds = timerRef.current;
 
-        // Guardar la sesión en la base de datos
         try {
             await run(`
         INSERT INTO distance_sessions (distance_meters, duration_seconds, date_time)
         VALUES (?, ?, ?)
       `, [meters, durationSeconds, Date.now()]);
-
-            // Actualizar el historial después de guardar
+      
             await loadHistory();
         } catch (error) {
             console.error("Error al guardar la sesión:", error);

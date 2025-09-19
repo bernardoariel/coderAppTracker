@@ -1,9 +1,7 @@
-// Hook de inicialización DB
 import { useEffect, useRef } from 'react';
 import { migrate, q } from '../lib/db';
 import { seedExercisesFromJson } from '../lib/seedExercises';
 
-// Evita ejecuciones duplicadas en Fast Refresh
 let alreadyBootstrapped = false;
 
 export function useInitDb() {

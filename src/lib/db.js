@@ -1,10 +1,7 @@
-// SQLite y funciones auxiliares
-// src/lib/db.js
 import * as SQLite from 'expo-sqlite';
 
 export const db = SQLite.openDatabaseSync('gym.db');
 
-// Migraciones (tablas + columnas nuevas si no existen)
 export async function migrate() {
   await db.execAsync(`
     PRAGMA foreign_keys = ON;
@@ -18,14 +15,13 @@ export async function migrate() {
     );
   `);
 
-  // Columnas adicionales (idempotentes)
   try { await db.execAsync(`ALTER TABLE exercises ADD COLUMN series_min INTEGER`); } catch { }
   try { await db.execAsync(`ALTER TABLE exercises ADD COLUMN series_max INTEGER`); } catch { }
   try { await db.execAsync(`ALTER TABLE exercises ADD COLUMN reps_min INTEGER`); } catch { }
   try { await db.execAsync(`ALTER TABLE exercises ADD COLUMN reps_max INTEGER`); } catch { }
   try { await db.execAsync(`ALTER TABLE exercises ADD COLUMN default_weight REAL`); } catch { }
 
-  /* Rutinas */
+
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS routines (
       id TEXT PRIMARY KEY,
@@ -35,7 +31,7 @@ export async function migrate() {
     );
   `);
 
-  /* Puente rutina ↔ ejercicio (con orden) */
+
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS routine_exercises (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,7 +43,7 @@ export async function migrate() {
       FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
     );
   `);
-  // Sesiones de rutina (historial simple)
+
   await db.execAsync(`
   CREATE TABLE IF NOT EXISTS routine_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,7 +54,6 @@ export async function migrate() {
 `);
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_sessions_routine ON routine_sessions(routine_id, done_at DESC);`);
 
-  // Sesiones de seguimiento de distancia (para RunScreen)
   await db.execAsync(`
   CREATE TABLE IF NOT EXISTS distance_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,12 +64,12 @@ export async function migrate() {
 `);
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_distance_sessions_date ON distance_sessions(date_time DESC);`);
 
-  /* Índices útiles */
+
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_routine_exercises_routine ON routine_exercises(routine_id, position);`);
   await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_routine_exercises_exercise ON routine_exercises(exercise_id);`);
 }
 
-// Helpers
+
 export async function q(sql, params = []) {
   return db.getAllAsync(sql, params);
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Switch, Button, Alert, FlatList, Pressable } from 'react-native';
 import { q, run } from '../../lib/db';
 import { randomUUID } from 'expo-crypto';

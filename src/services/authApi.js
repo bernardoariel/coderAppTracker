@@ -1,4 +1,3 @@
-// src/services/authApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const baseUrl = process.env.EXPO_PUBLIC_AUTH_URL || 'https://identitytoolkit.googleapis.com/v1/';

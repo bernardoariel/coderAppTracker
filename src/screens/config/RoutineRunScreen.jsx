@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { View, Text, FlatList, Pressable, Alert, Vibration } from 'react-native';
 import { q, run } from '../../lib/db';
 import { Audio } from 'expo-av';

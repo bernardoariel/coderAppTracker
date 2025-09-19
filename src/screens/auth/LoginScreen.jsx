@@ -1,6 +1,5 @@
-// src/screens/auth/LoginScreen.jsx
 import { useState } from 'react';
-import { View, TextInput, Pressable, Text, StyleSheet, Image, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { View, TextInput,  Text, StyleSheet, Image, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setEmail } from '../../store/slices/authSlice';
 import { useLoginMutation } from '../../services/authApi';
@@ -16,19 +15,17 @@ export default function LoginScreen({ navigation }) {
 
   const onSubmit = async () => {
     try {
-      const res = await login({ email, password }).unwrap(); // lanza si falla
-      // Guarda si luego querés usar RTDB/REST con idToken (opcional)
+      const res = await login({ email, password }).unwrap();
+     
       await AsyncStorage.setItem('auth', JSON.stringify({
         email: res.email,
         idToken: res.idToken,
         refreshToken: res.refreshToken,
         localId: res.localId,
       }));
-      dispatch(setEmail(res.email));              // solo email en Redux
-      // No necesitamos hacer navigation.reset ya que el RootNavigator 
-      // automáticamente cambiará cuando isLoggedIn sea true
+      dispatch(setEmail(res.email));           
     } catch (e) {
-      // e?.data?.error?.message viene de Firebase (ej: INVALID_PASSWORD)
+     
       console.log('Auth error:', e);
     }
   };

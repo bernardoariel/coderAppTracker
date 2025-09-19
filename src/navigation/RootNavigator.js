@@ -8,7 +8,7 @@ import AuthStack from './AuthStack';
 const RootStack = createNativeStackNavigator();
 
 export default function RootNavigator() {
-    // Mover el hook useSelector dentro del componente
+
     const isLoggedIn = useSelector(selectIsLoggedIn);
     
     return (
